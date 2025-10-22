@@ -289,32 +289,28 @@ function useMegasenaData() {
       let prizeTmp = [];
 
       if (contestObj || latestObj) {
-        const base = contestObj || latestObj;
+        const base = contestObj?.dezenas?.length ? contestObj : latestObj;
         lastContestTmp = Number(base?.concurso) || null;
         lastDateTmp = base?.data || null;
-
+      
         const nums = (base?.dezenas || []).map((d) => Number(d)).filter((x) => Number.isFinite(x));
-        if (nums.length === 6) lastNumsTmp = nums.sort((a, b) => a - b);
-
-        // tenta extrair premiação do objeto atual
+        if (nums.length === 6) {
+          lastNumsTmp = nums.sort((a, b) => a - b);
+        } else {
+          // fallback: tenta buscar no histórico JSON
+          const fromRaw = augmented[lastContestTmp];
+          if (fromRaw?.length === 6) {
+            lastNumsTmp = fromRaw.slice().sort((a, b) => a - b);
+          }
+        }
+      
         prizeTmp = extractPrizeBreakdownFromObj(base);
-
-        // tenta do outro
-        if ((!prizeTmp || prizeTmp.length === 0) && contestObj && base === latestObj) {
-          const p2 = extractPrizeBreakdownFromObj(contestObj);
-          if (p2.length) prizeTmp = p2;
-        }
-        if ((!prizeTmp || prizeTmp.length === 0) && latestObj && base === contestObj) {
-          const p2 = extractPrizeBreakdownFromObj(latestObj);
-          if (p2.length) prizeTmp = p2;
-        }
-
-        // analítico
-        if (!prizeTmp || prizeTmp.length === 0) {
+        if ((!prizeTmp || !prizeTmp.length) && lastContestTmp) {
           const p3 = extractPrizeFromAnalytic(anaJson, lastContestTmp);
           if (p3.length) prizeTmp = p3;
         }
       }
+      
 
       // fallbacks
       if (!lastContestTmp) {
@@ -1187,7 +1183,7 @@ export default function App() {
                     <Lightbulb className="w-4 h-4 inline mr-1 text-[#67d38a]" />
                     Painel Mega-Sena aprimorado com simulação e estatísticas.
                   </div>
-                  <div>© 2025 - Projeto criado por Lucas Bustamante.</div>
+                  <div>© 2025 V1.0.0 - Projeto criado por Lucas Bustamante.</div>
                 </footer>
       </div>
     </div>
