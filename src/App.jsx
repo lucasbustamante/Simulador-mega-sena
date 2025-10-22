@@ -2,8 +2,9 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, BarChart3, Calendar, Play, Square, RotateCcw } from "lucide-react";
+import { Loader2, BarChart3, Calendar, Play, Square, RotateCcw,Award,Info, Lightbulb } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from "recharts";
+
 
 /**
  * Mega-Sena • Resultados oficiais (API) + Simulador 6×60 (loop contínuo)
@@ -618,7 +619,7 @@ function TopCombosFromTopN({ raw, freq, totalDraws, topN }) {
       <div className="md:col-span-2 bg-[#0e1530] border border-white/10 rounded-xl p-3 max-h-[420px] overflow-auto">
         {[2,3,4,5,6].map((k) => (
           <div key={k} className="mb-4">
-            <div className="text-sm font-semibold mb-1">Top combinações k={k}</div>
+            <div className="text-sm font-semibold mb-1">Combinações mais frequentes entre {k} números mais sorteados</div>
             {byK[k] && byK[k].length ? (
               <table className="w-full text-sm">
                 <thead className="sticky top-0 bg-[#0d1430]">
@@ -650,7 +651,7 @@ function TopCombosFromTopN({ raw, freq, totalDraws, topN }) {
                 </tbody>
               </table>
             ) : (
-              <div className="text-sm text-[#b6c2e6]">Nenhuma combinação encontrada para k={k}.</div>
+              <div className="text-sm text-[#b6c2e6]">Nenhuma combinação encontrada para {k} números.</div>
             )}
           </div>
         ))}
@@ -855,50 +856,89 @@ export default function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0b1020] bg-gradient-to-b from-[#0b1020] via-[#0e1430] to-[#0b1020] p-6 text-[#e8eefc]">
+    <div className="min-h-screen bg-[#0b1020] text-[#e8eefc]">
       <div className="max-w-6xl mx-auto space-y-6">
-        <header className="flex items-center gap-3">
-          <BarChart3 className="w-7 h-7" />
-          <h1 className="text-2xl font-extrabold">Mega-Sena • Simulador de Probabilidades</h1>
-        </header>
+      <header className="bg-[#111830] py-5 text-center shadow-md border-b border-[#1a2448]">
+        <h1 className="text-3xl font-extrabold flex justify-center items-center gap-2 text-white">
+          <BarChart3 className="w-7 h-7 text-[#67d38a]" />
+          Mega-Sena • Painel Completo
+        </h1>
+        <p className="text-[#b6c2e6] text-sm">
+          Resultados oficiais, simulação e estatísticas em tempo real.
+        </p>
+      </header>
 
-        {/* Resultados oficiais */}
-        <Card className="border border-white/10 rounded-2xl overflow-hidden bg-[#111830] text-white shadow-xl">
-          <CardContent className="p-4 md:p-6 flex flex-col gap-4">
-            <div className="flex flex-col gap-3">
-              <div>
-                <Button onClick={fetchAll} disabled={loading} className="font-extrabold text-[#0b1020] bg-gradient-to-r from-[#67d38a] to-[#42d0a0]">
-                  {loading ? (<span className="inline-flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> Carregando…</span>) : ("Carregar resultados oficiais")}
-                </Button>
+
+          <Card className="bg-[#111830] border border-[#1a2448] rounded-2xl shadow-xl">
+            <CardContent className="p-5 space-y-5">
+              <div className="flex items-center gap-2">
+                <Award className="w-5 h-5 text-[#67d38a]" />
+                <h2 className="text-xl font-bold text-white">Resultados Oficiais</h2>
               </div>
-              {lastContest && (
-                <div className="text-sm text-[#b6c2e6] flex items-center gap-2 w-full">
-                  <Calendar className="w-4 h-4" />
-                  <span>
-                    Último concurso: <span className="font-semibold text-white">{lastContest}</span>
-                    {lastDate && <> • Data: <span className="font-semibold text-white">{lastDate}</span></>}
-                    {" "}• Total de sorteios: {totalDraws}
-                    {typeof acumulado === "boolean" && <> • Acumulado: <span className="font-semibold text-white">{acumulado ? "Sim" : "Não"}</span></>}
-                    {nextEstPrize != null && <> • Próximo prêmio estimado: <span className="font-semibold text-white">{fmtBRL(nextEstPrize)}</span></>}
-                    {nextDate && <> • Próximo sorteio: <span className="font-semibold text-white">{nextDate}</span></>}
+              <p className="text-sm text-[#b6c2e6]">
+                Carregue os dados oficiais e veja as últimas dezenas, valores de prêmios
+                e o status do próximo concurso.
+              </p>
+  
+              <Button
+                onClick={fetchAll}
+                disabled={loading}
+                className="bg-gradient-to-r from-[#67d38a] to-[#42d0a0] font-extrabold text-[#0b1020]"
+              >
+                {loading ? (
+                  <span className="inline-flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" /> Carregando…
                   </span>
+                ) : (
+                  "Carregar resultados oficiais"
+                )}
+              </Button>
+  
+              {error && (
+                <div className="p-3 bg-red-800/40 rounded-lg text-sm text-red-200 border border-red-400/30">
+                  Erro: {error}
                 </div>
               )}
-            </div>
-
-            {(lastOfficialNumbers?.length || lastPrizeBreakdown?.length) ? (
-              <div className="bg-[#0e1530] border border-white/10 rounded-xl p-3">
-                <div className="text-sm font-semibold mb-2">Último sorteio oficial {lastOfficialContest ? `(#${lastOfficialContest})` : ""}:</div>
-                {lastOfficialNumbers?.length ? (
-                  <div className="mb-3">
-                    <div className="text-xs text-[#b6c2e6] mb-1">Dezenas sorteadas</div>
-                    <Balls numbers={[...lastOfficialNumbers].sort((a, b) => a - b)} />
+  
+              {lastOfficialContest && (
+                <div className="bg-[#141a40] border border-white/10 rounded-xl p-3 space-y-3">
+                  <div className="text-sm flex flex-wrap items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    <span>
+                      Concurso <b>{lastOfficialContest}</b>
+                      {nextDate && (
+                        <>
+                          {" • "}Próximo sorteio:{" "}
+                          <b className="text-[#67d38a]">{nextDate}</b>
+                        </>
+                      )}
+                      {acumulado != null && (
+                        <>
+                          {" • "}Acumulado:{" "}
+                          <b className="text-white">
+                            {acumulado ? "Sim" : "Não"}
+                          </b>
+                        </>
+                      )}
+                      {nextEstPrize && (
+                        <>
+                          {" • "}Prêmio estimado:{" "}
+                          <b className="text-[#7aa7ff]">
+                            {fmtBRL(nextEstPrize)}
+                          </b>
+                        </>
+                      )}
+                    </span>
                   </div>
-                ) : null}
-                {lastPrizeBreakdown?.length ? (
+  
                   <div>
-                    <div className="text-xs text-[#b6c2e6] mb-1">Premiações</div>
-                    <div className="overflow-auto">
+                    <div className="text-xs text-[#b6c2e6] mb-1">Dezenas sorteadas</div>
+                    <Balls numbers={lastOfficialNumbers} />
+                  </div>
+  
+                  {lastPrizeBreakdown?.length > 0 && (
+                    <div>
+                      <div className="text-xs text-[#b6c2e6] mb-1">Premiações</div>
                       <table className="w-full text-sm">
                         <thead className="sticky top-0 bg-[#0d1430]">
                           <tr>
@@ -909,25 +949,52 @@ export default function App() {
                         </thead>
                         <tbody>
                           {lastPrizeBreakdown.map((p, i) => (
-                            <tr key={i} className="border-b border-dashed border-white/10">
+                            <tr
+                              key={i}
+                              className="border-b border-dashed border-white/10"
+                            >
                               <td className="py-1.5 px-2">{p.faixa}</td>
-                              <td className="py-1.5 px-2 text-right">{p.vencedores != null ? p.vencedores.toLocaleString("pt-BR") : "—"}</td>
-                              <td className="py-1.5 px-2 text-right">{p.premio != null ? fmtBRL(p.premio) : "—"}</td>
+                              <td className="py-1.5 px-2 text-right">
+                                {p.vencedores != null
+                                  ? p.vencedores.toLocaleString("pt-BR")
+                                  : "—"}
+                              </td>
+                              <td className="py-1.5 px-2 text-right">
+                                {p.premio != null ? fmtBRL(p.premio) : "—"}
+                              </td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
                     </div>
-                  </div>
-                ) : null}
-              </div>
-            ) : null}
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        {/* Resultados oficiais */}
+        
 
             {error && <div className="p-3 rounded-lg bg-red-50/10 border border-red-400/40 text-sm text-red-200">Erro: {error}</div>}
 
             {/* Top N + gráfico */}
             {totalDraws > 0 && (
+              
               <>
+              <Card className="border border-white/10 rounded-2xl overflow-hidden bg-[#111830] text-white shadow-xl">
+          <CardContent className="p-4 md:p-6 flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-2">
+                            <BarChart3 className="w-5 h-5 text-[#7aa7ff]" />
+                            <h2 className="text-xl font-bold text-white">
+                      Estatísticas de Sorteios
+                    </h2>
+              
+                  </div>    
+                  <p className="text-sm text-[#b6c2e6]">
+                    Veja quais números mais saíram na história e suas combinações mais frequentes.
+                  </p> 
+                  </div>
                 <div className="space-y-3">
                   <div className="flex items-end gap-3">
                     <div className="flex-1 text-sm font-semibold">Top numeros mais sorteados (histórico oficial)</div>
@@ -960,50 +1027,27 @@ export default function App() {
 
                 {/* Consultador (opcional – já estava no código) */}
                 <Consultador raw={raw} analytic={analytic} hasSubset={hasSubset} />
+                {/* Rodapé */}
+             {/* Rodapé */}
+             <div className="text-xs text-[#b6c2e6]">Fontes: GitHub comunitário (histórico completo) + API alternativa (dados recentes). Em caso de indisponibilidade da API, o app utiliza somente o histórico.</div>
+          </CardContent>
+        </Card>
               </>
             )}
 
-            {/* Chances & valores oficiais (6..20) */}
-            <div className="bg-[#0e1530] border border-white/10 rounded-xl p-3">
-              <div className="text-sm font-semibold mb-2">Chances & valores oficiais (6 a 20 números)</div>
-              <div className="overflow-auto max-h-[360px]">
-                <table className="w-full text-sm">
-                  <thead className="sticky top-0 bg-[#0d1430]">
-                    <tr>
-                      <th className="text-left py-2 px-2">Números marcados</th>
-                      <th className="text-right py-2 px-2">Preço</th>
-                      <th className="text-right py-2 px-2">Probabilidade (1 em X)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[...officialTable].map((row) => (
-                      <tr key={row.n} className="border-b border-dashed border-white/10">
-                        <td className="py-1.5 px-2">{row.n}</td>
-                        <td className="py-1.5 px-2 text-right">{fmtBRL(row.price)}</td>
-                        <td className="py-1.5 px-2 text-right">{row.odds.toLocaleString("pt-BR")}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div className="text-xs text-[#b6c2e6] mt-2">Tabela fixa conforme valores informados. Probabilidade refere-se à Sena.</div>
-            </div>
-
-            {/* Rodapé */}
-            <div className="text-xs text-[#b6c2e6]">Fontes: GitHub comunitário (histórico) + API alternativa (últimos concursos). Se a API alternativa cair, o app usa apenas o histórico.</div>
-          </CardContent>
-        </Card>
+            
 
         {/* Simulador 6×60 */}
-        <Card className="border border-white/10 rounded-2xl overflow-hidden bg-[#111830] text-white shadow-xl">
-          <CardContent className="p-4 md:p-6 flex flex-col gap-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-[#0b1020] px-3 py-1 rounded-full" style={{ background: "linear-gradient(90deg,#67d38a,#7aa7ff)" }}>Sorteador 6×60</span>
-                <div className="text-lg font-extrabold">Loop contínuo até você parar</div>
-              </div>
-              <div className="text-sm text-[#b6c2e6]">Distribuição esperada ≈ uniforme</div>
-            </div>
+        <Card className="bg-[#111830] border border-[#1a2448] rounded-2xl shadow-xl">
+                    <CardContent className="p-5 space-y-4">
+                      <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                        <Play className="w-5 h-5 text-[#67d38a]" />
+                        Simulador 6×60 • Sorteios automáticos
+                      </h2>
+                      <p className="text-sm text-[#b6c2e6]">
+                        Gere sorteios aleatórios em loop e veja a frequência de cada número.
+                        Ideal para testar probabilidades reais.
+                      </p>
 
             <div className="flex flex-wrap items-center gap-3">
               <Button onClick={sim.start} disabled={sim.running} className="font-extrabold text-[#0b1020] bg-gradient-to-r from-[#67d38a] to-[#42d0a0]">
@@ -1015,8 +1059,7 @@ export default function App() {
               <Button onClick={sim.reset} className="font-extrabold text-[#0b1020] bg-gradient-to-r from-[#9aa7ff] to-[#7aa7ff]">
                 <RotateCcw className="w-4 h-4 mr-1" /> Reset
               </Button>
-              <span className="text-xs text-[#b6c2e6]">Dica: roda muito rápido; a UI atualiza em lotes.</span>
-            </div>
+                  </div>
 
             <div className="flex flex-wrap items-center gap-4">
               <label className="inline-flex items-center gap-2 text-sm bg-[#0c1330] border border-white/10 rounded-full px-3 py-2">
@@ -1062,9 +1105,8 @@ export default function App() {
               </div>
             </div>
 
-            <div className="bg-[#0c1330] border border-white/10 rounded-full h-2 overflow-hidden">
-              <div className="h-2 w-full" style={{ background: "linear-gradient(90deg,#7aa7ff,#67d38a)", transform: sim.running ? "translateX(0)" : "translateX(-100%)", transition: "transform .2s ease" }} />
-            </div>
+       
+             
 
             <div className="bg-[#0e1530] border border-white/10 rounded-xl p-3 max-h-[540px] overflow-auto">
               <table className="w-full text-sm">
@@ -1097,6 +1139,56 @@ export default function App() {
             </div>
           </CardContent>
         </Card>
+
+        {/* =============================
+                   BLOCO 4: Tabela de Probabilidades
+                   ============================= */}
+                <Card className="bg-[#111830] border border-[#1a2448] rounded-2xl shadow-xl">
+                  <CardContent className="p-5">
+                    <h2 className="text-xl font-bold text-white flex items-center gap-2 mb-2">
+                      <Info className="w-5 h-5 text-[#7aa7ff]" />
+                      Probabilidades Oficiais
+                    </h2>
+                    <p className="text-sm text-[#b6c2e6] mb-4">
+                      Tabela oficial com o preço de cada tipo de aposta (6 a 20 números)
+                      e suas chances de acerto da <b>Sena</b>.
+                    </p>
+                    <div className="overflow-auto max-h-[400px]">
+                      <table className="w-full text-sm">
+                        <thead className="sticky top-0 bg-[#0d1430]">
+                          <tr>
+                            <th className="text-left py-2 px-2">Números</th>
+                            <th className="text-right py-2 px-2">Preço</th>
+                            <th className="text-right py-2 px-2">Probabilidade (1 em X)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {officialTable.map((r) => (
+                            <tr key={r.n} className="border-b border-dashed border-white/10">
+                              <td className="py-1.5 px-2">{r.n}</td>
+                              <td className="py-1.5 px-2 text-right">{fmtBRL(r.price)}</td>
+                              <td className="py-1.5 px-2 text-right">{r.odds.toLocaleString("pt-BR")}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <p className="text-xs text-[#8691b8] mt-2">
+                      Valores e probabilidades conforme informações da Caixa Econômica Federal.
+                    </p>
+                  </CardContent>
+                </Card>
+
+        {/* =============================
+           RODAPÉ FINAL
+           ============================= */}
+        <footer className="text-center py-6 text-[#8691b8] text-sm border-t border-[#1a2448] mt-8">
+                  <div>
+                    <Lightbulb className="w-4 h-4 inline mr-1 text-[#67d38a]" />
+                    Painel Mega-Sena aprimorado com simulação e estatísticas.
+                  </div>
+                  <div>© 2025 - Projeto criado por Lucas Bustamante.</div>
+                </footer>
       </div>
     </div>
   );
