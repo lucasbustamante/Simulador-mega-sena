@@ -861,6 +861,20 @@ export default function App() {
         </h1>
         <p className="text-[#b6c2e6] text-sm">
           Resultados oficiais, simulação e estatísticas em tempo real.
+          <Card className="mt-6">
+  <CardContent className="text-sm text-white-700 leading-relaxed">
+    <p>
+      Este site é um simulador da Mega-Sena desenvolvido para fins informativos e educacionais.
+      Os resultados e estatísticas aqui exibidos são baseados em dados públicos de sorteios
+      oficiais, mas não possuem vínculo com a Caixa Econômica Federal.
+    </p>
+    <p className="mt-2">
+      Use o simulador para explorar probabilidades, histórico de dezenas e frequência de números.
+      Nenhum jogo é realizado neste site — ele serve apenas para análise e diversão.
+    </p>
+  </CardContent>
+</Card>
+
         </p>
       </header>
 
@@ -1184,6 +1198,8 @@ export default function App() {
                     Painel Mega-Sena aprimorado com simulação e estatísticas.
                   </div>
                   <div>© 2025 V1.0.3 - Projeto criado por Lucas Bustamante.</div>
+                  Projeto informativo sem vínculo com a Caixa Econômica Federal.
+
                 </footer>
       </div>
     </div>
