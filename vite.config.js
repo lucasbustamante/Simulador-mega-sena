@@ -2,10 +2,8 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 
-// ⚙️ Ajuste para GitHub Pages
-// Troque "megasena-app" pelo NOME exato do seu repositório no GitHub
 export default defineConfig({
-  base: '/Simulador-mega-sena/',
+  base: './', // ✅ usa caminhos relativos — funciona no Netlify, Vercel e em domínio próprio
   plugins: [react()],
   resolve: {
     alias: {
