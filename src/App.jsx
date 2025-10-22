@@ -1183,7 +1183,7 @@ export default function App() {
                     <Lightbulb className="w-4 h-4 inline mr-1 text-[#67d38a]" />
                     Painel Mega-Sena aprimorado com simulação e estatísticas.
                   </div>
-                  <div>© 2025 V1.0.2 - Projeto criado por Lucas Bustamante.</div>
+                  <div>© 2025 V1.0.3 - Projeto criado por Lucas Bustamante.</div>
                 </footer>
       </div>
     </div>
