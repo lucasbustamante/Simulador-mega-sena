@@ -1,0 +1,4 @@
+# Dependências e cache locais
+node_modules/
+node_modules/.cache/
+dist/
